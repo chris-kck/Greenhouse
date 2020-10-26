@@ -14,6 +14,9 @@ fig2 = make_subplots(rows=1, cols=2)
 fig2.add_trace(go.Scatter(y=[4, 2, 1], mode="lines"), row=1, col=1)
 fig2.add_trace(go.Bar(y=[2, 1, 3]), row=1, col=2)
 
+#fig.add_trace(go.Scatter(x=t1, y=y1, name="10 cycles sampled at 1KHz",mode='markers',
+#                         marker=dict(color='Red',size=4)), row=2, col=1)
+# fig.update_xaxes(title='Time (s)')
 
 import plotly.graph_objects as go
 import numpy as np
@@ -95,4 +98,5 @@ app.layout = html.Div(children=[
 ])
 
 if __name__ == '__main__':
+
     app.run_server(debug=True, host="0.0.0.0", port="8080")
