@@ -47,16 +47,22 @@ app.layout = html.Div(
 
 @app.callback(
     Output('live-graph', 'figure'),
+    Output('zero', 'figure'),
+    Output('one', 'figure'),
     [ Input('graph-update', 'n_intervals') ]
 )
 
 def update_graph_scatter(n):
-    X.append(X[-1]+1)
-    Y.append(Y[-1]+Y[-1] * random.uniform(-0.1,0.1))
+    X.append(X[-1]+5)
+    readings = obj.read_all()
+    Y0.append(readings[0])  # moisture
+    Y1.append(readings[1])  # light
+    Y2.append(readings[2])  # temp
+    Y3.append(readings[3])  # humidity
 
     data = plotly.graph_objs.Scatter(
         x=list(X),
-        y=list(Y),
+        y=list(Y0),
         name='Scatter',
         mode= 'lines+markers'
     )
