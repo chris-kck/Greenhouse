@@ -3,10 +3,23 @@ import dash
 from dash.dependencies import Output, Input
 import dash_core_components as dcc
 import dash_html_components as html
+
 import plotly
-import random
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+
 from collections import deque
+import datetime
+from smartagro import *
+
+
+obj = smart.SmartAgro()
+#obj.activate_actuator(15,1)
+#time.sleep(3)
+#obj.activate_actuator(15,0)
+
+def now():
+    return datetime.datetime.now().strftime("%X")
 
 X = deque(maxlen = 20)
 X.append(1)
