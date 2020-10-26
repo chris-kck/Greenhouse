@@ -67,9 +67,32 @@ def update_graph_scatter(n):
         mode= 'lines+markers'
     )
 
+    fig = make_subplots(rows=1, cols=2)
+    fig.add_trace(go.Scatter(x=list(X), y=list(Y0), mode="lines+markers", name="Moisture"), row=1, col=1, )
+    fig.add_trace(go.Scatter(x=list(X), y=list(Y1), mode="lines+markers", name="Light"), row=1, col=2, )
+    fig.update_layout(xaxis=dict(range=[min(X), max(X)]),
+                      yaxis = dict(range = [min(Y0),max(Y0)])
+                      )
+    fig.update_yaxes(title_text="Moisture %", row=1, col=1)
+    fig.update_yaxes(title_text="Light %", row=1, col=2)
+    fig.update_xaxes(title_text="Elapsed Time (s)")
+
+    fig2 = make_subplots(rows=1, cols=2)
+    fig2.add_trace(go.Scatter(x=list(X), y=list(Y2), mode="lines+markers",  name="Temperature"), row=1, col=1,)
+    fig2.add_trace(go.Scatter(x=list(X), y=list(Y3), mode="lines+markers",  name="Humidity"), row=1, col=2,)
+    fig2.update_layout(xaxis=dict(range=[min(X), max(X)]),
+                       yaxis = dict(range = [min(Y2),max(Y2)])
+                       )
+    fig2.update_yaxes(title_text="Temperature °C", row=1, col=1)
+    fig2.update_yaxes(title_text="Humidity %", row=1, col=2)
+    fig2.update_xaxes(title_text="Elapsed Time (s)")
+
     return {'data': [data],
-            'layout' : go.Layout(xaxis=dict(range=[min(X),max(X)]),yaxis = dict(range = [min(Y),max(Y)]),)}
+            'layout' : go.Layout(xaxis=dict(range=[min(X), max(X)]),yaxis = dict(range = [min(Y0),max(Y0)]),)}, fig, fig2
 
 if __name__ == '__main__':
-    app.run_server(host="0.0.0.0", port=8080)
-
+    try:
+        app.run_server(host="0.0.0.0", port=8080)
+    except KeyboardInterrupt:
+        obj.cleanup()
+        print("Exiting")
