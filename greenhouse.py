@@ -24,17 +24,22 @@ def now():
 X = deque(maxlen = 20)
 X.append(1)
 
-Y = deque(maxlen = 20)
-Y.append(1)
+Y0 = deque(maxlen = 20)
+Y1 = deque(maxlen = 20)
+Y2 = deque(maxlen = 20)
+Y3 = deque(maxlen = 20)
 
 app = dash.Dash(__name__)
 
+# title='Real-time Monitoring',
 app.layout = html.Div(
     [
         dcc.Graph(id = 'live-graph', animate = True),
+        dcc.Graph(id='zero', animate = True),
+        dcc.Graph(id='one', animate = True),
         dcc.Interval(
             id = 'graph-update',
-            interval = 1000,
+            interval = 5000,
             n_intervals = 0
         ),
     ]
