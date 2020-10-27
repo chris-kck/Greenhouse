@@ -12,22 +12,21 @@ from collections import deque
 import datetime
 from smartagro import *
 
-
 obj = smart.SmartAgro()
-#obj.activate_actuator(15,1)
-#time.sleep(3)
-#obj.activate_actuator(15,0)
 
 def now():
-    return datetime.datetime.now().strftime("%X")
+    return datetime.datetime.now().strftime("%c")
 
-X = deque(maxlen = 20)
-X.append(1)
 
-Y0 = deque(maxlen = 20)
-Y1 = deque(maxlen = 20)
-Y2 = deque(maxlen = 20)
-Y3 = deque(maxlen = 20)
+X = deque(maxlen=20)
+X.append(0)
+
+Y0 = deque(maxlen=20)
+Y1 = deque(maxlen=20)
+Y2 = deque(maxlen=20)
+Y3 = deque(maxlen=20)
+Y2.append(1)
+Y3.append(1)
 
 app = dash.Dash(__name__)
 
