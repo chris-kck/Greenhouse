@@ -1,4 +1,3 @@
-
 import dash
 from dash.dependencies import Output, Input
 import dash_core_components as dcc
@@ -15,24 +14,28 @@ from smartagro import *
 obj = smart.SmartAgro()
 
 def now():
+    """
+    Function to get formatted current local time.
+
+    :return: Local Time
+    """
     return datetime.datetime.now().strftime("%c")
 
-
+#Create collections to store graph axes sensor data.
 X = deque(maxlen=20)
-X.append(0)
-
 Y0 = deque(maxlen=20)
 Y1 = deque(maxlen=20)
 Y2 = deque(maxlen=20)
 Y3 = deque(maxlen=20)
+X.append(0)
 Y2.append(1)
 Y3.append(1)
 
+#instantiate Dash App.
 app = dash.Dash(__name__)
 
-# title='Real-time Monitoring',
+#Define HTML Layout of app.
 app.layout = html.Div(
-
     [html.H1(children='SmartAgro API Demonstrator', style={'text-align': 'center'}),
      html.Br(),
      html.H2(children="Last Updated:", style={'text-align': 'center'}),
@@ -55,20 +58,22 @@ app.layout = html.Div(
          ],
          value=0
      ),
-     html.Div(id='output', style={'visibility': 'hidden'}),
+     html.Div(id='output'),
      dcc.Graph(id='live-graph', animate=True),
-     dcc.Graph(id='zero', animate=True),
+
      html.Div(id="0", style={'width': '49%', 'display': 'inline-block', 'text-align': 'center', 'font-size': '25px', 'font-weight': 'bold'}),
      html.Div(id="1", style={'width': '49%', 'display': 'inline-block', 'text-align': 'center', 'font-size': '25px', 'font-weight': 'bold'}),
+     dcc.Graph(id='zero', animate=True),
 
-     dcc.Graph(id='one', animate=True),
      html.Div(id="2", style={'width': '49%', 'display': 'inline-block', 'text-align': 'center', 'font-size': '25px', 'font-weight': 'bold'}),
      html.Div(id="3", style={'width': '49%', 'display': 'inline-block', 'text-align': 'center', 'font-size': '25px', 'font-weight': 'bold'}),
+     dcc.Graph(id='one', animate=True),
+
      dcc.Interval(id='graph-update', interval=5000, n_intervals=0),
      ]
 )
 
-
+#Add decorators for callbacks supplying them with interval input every 5 seconds to update graphs.
 @app.callback(
     Output('live-graph', 'figure'),
     Output('zero', 'figure'),
@@ -81,6 +86,13 @@ app.layout = html.Div(
     [Input('graph-update', 'n_intervals'), Input('sensor-dropdown', 'value')]
 )
 def update_graph_scatter(n, sensor):
+    """
+    Callback function to update graphs.
+
+    :param n: Number of intervals that have passed
+    :param sensor: The sensor number to be on the spotlight display
+    :return: Graphs and sensor readings
+    """
     X.append(X[-1] + 5)
     readings = obj.read_all()
     Y0.append(readings[0])  # moisture
@@ -108,21 +120,26 @@ def update_graph_scatter(n, sensor):
     data = plotly.graph_objs.Scatter(x=list(X), y=list(Y[sensor]), name='Scatter', mode='lines+markers')
     fig0 = {'data': [data], 'layout': go.Layout(xaxis=dict(range=[min(X), max(X)]),
                                                 yaxis=dict(range=[min(Y[sensor]), max(Y[sensor])]), )}
-    y0 = f"Moisture: {Y0[-1]} %"
-    y1 = f"Light Intensity: {Y1[-1]} %"
-    y2 = f"Temperature: {Y2[-1]} °C"
-    y3 = f"Humidity: {Y3[-1]} %"
+    y0 = f"Moisture Sensor: {Y0[-1]} %"
+    y1 = f"Light Sensor: {Y1[-1]} %"
+    y2 = f"Temperature Sensor: {Y2[-1]} °C"
+    y3 = f"Humidity Sensor: {Y3[-1]} %"
     return fig0, fig, fig2, now(), y0, y1, y2, y3
 
 
 @app.callback(Output('output', 'children'),
               [Input('fan', 'value')])
 def update_output_1(value):
-    obj.activate_actuator(15, value)
-    return value
+    """
+    Callback to activate actuator
 
-    return {'data': [data],
-            'layout' : go.Layout(xaxis=dict(range=[min(X), max(X)]),yaxis = dict(range = [min(Y0),max(Y0)]),)}, fig, fig2
+    :param value: Actuator state
+    :return: actuator state
+    """
+    obj.activate_actuator(15, value)
+    state = "Actuator ON" if value else "Actuator OFF"
+    return state
+
 
 if __name__ == '__main__':
     try:
