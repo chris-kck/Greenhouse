@@ -32,16 +32,40 @@ app = dash.Dash(__name__)
 
 # title='Real-time Monitoring',
 app.layout = html.Div(
-    [
-        dcc.Graph(id = 'live-graph', animate = True),
-        dcc.Graph(id='zero', animate = True),
-        dcc.Graph(id='one', animate = True),
-        dcc.Interval(
-            id = 'graph-update',
-            interval = 5000,
-            n_intervals = 0
-        ),
-    ]
+
+    [html.H1(children='SmartAgro API Demonstrator', style={'text-align': 'center'}),
+     html.Br(),
+     html.H2(children="Last Updated:", style={'text-align': 'center'}),
+     html.Div(id='time', style={'text-align': 'center'}),
+     dcc.RadioItems(
+         id='fan',
+         options=[
+             {'label': 'Turn Fan ON', 'value': 1},
+             {'label': 'Turn Fan OFF', 'value': 0}
+         ],
+         value=0
+     ),
+     dcc.Dropdown(
+         id='sensor-dropdown', style={'width': '200px'},
+         options=[
+             {'label': 'Moisture', 'value': 0},
+             {'label': 'Light', 'value': 1},
+             {'label': 'Temperature', 'value': 2},
+             {'label': 'Humidity', 'value': 3}
+         ],
+         value=0
+     ),
+     html.Div(id='output', style={'visibility': 'hidden'}),
+     dcc.Graph(id='live-graph', animate=True),
+     dcc.Graph(id='zero', animate=True),
+     html.Div(id="0", style={'width': '49%', 'display': 'inline-block', 'text-align': 'center', 'font-size': '25px', 'font-weight': 'bold'}),
+     html.Div(id="1", style={'width': '49%', 'display': 'inline-block', 'text-align': 'center', 'font-size': '25px', 'font-weight': 'bold'}),
+
+     dcc.Graph(id='one', animate=True),
+     html.Div(id="2", style={'width': '49%', 'display': 'inline-block', 'text-align': 'center', 'font-size': '25px', 'font-weight': 'bold'}),
+     html.Div(id="3", style={'width': '49%', 'display': 'inline-block', 'text-align': 'center', 'font-size': '25px', 'font-weight': 'bold'}),
+     dcc.Interval(id='graph-update', interval=5000, n_intervals=0),
+     ]
 )
 
 @app.callback(
