@@ -68,47 +68,58 @@ app.layout = html.Div(
      ]
 )
 
+
 @app.callback(
     Output('live-graph', 'figure'),
     Output('zero', 'figure'),
     Output('one', 'figure'),
-    [ Input('graph-update', 'n_intervals') ]
+    Output('time', 'children'),
+    Output('0', 'children'),
+    Output('1', 'children'),
+    Output('2', 'children'),
+    Output('3', 'children'),
+    [Input('graph-update', 'n_intervals'), Input('sensor-dropdown', 'value')]
 )
-
-def update_graph_scatter(n):
-    X.append(X[-1]+5)
+def update_graph_scatter(n, sensor):
+    X.append(X[-1] + 5)
     readings = obj.read_all()
     Y0.append(readings[0])  # moisture
     Y1.append(readings[1])  # light
-    Y2.append(readings[2])  # temp
-    Y3.append(readings[3])  # humidity
-
-    data = plotly.graph_objs.Scatter(
-        x=list(X),
-        y=list(Y0),
-        name='Scatter',
-        mode= 'lines+markers'
-    )
+    Y2.append(readings[2] if readings[2] != 0 else Y2[-1])  # temp
+    Y3.append(readings[3] if readings[3] != 0 else Y3[-1])  # humidity
 
     fig = make_subplots(rows=1, cols=2)
     fig.add_trace(go.Scatter(x=list(X), y=list(Y0), mode="lines+markers", name="Moisture"), row=1, col=1, )
     fig.add_trace(go.Scatter(x=list(X), y=list(Y1), mode="lines+markers", name="Light"), row=1, col=2, )
-    fig.update_layout(xaxis=dict(range=[min(X), max(X)]),
-                      yaxis = dict(range = [min(Y0),max(Y0)])
-                      )
-    fig.update_yaxes(title_text="Moisture %", row=1, col=1)
-    fig.update_yaxes(title_text="Light %", row=1, col=2)
-    fig.update_xaxes(title_text="Elapsed Time (s)")
+    fig.update_layout(xaxis=dict(range=[min(X), max(X)]), )  # if u dnt add it autoscales
+    fig.update_yaxes(title_text="Moisture %", row=1, col=1, range=[0, 100])
+    fig.update_yaxes(title_text="Light %", row=1, col=2, range=[0, 100])
+    fig.update_xaxes(title_text="Elapsed Time (s)", range=[min(X), max(X)])  # for both axes
 
     fig2 = make_subplots(rows=1, cols=2)
-    fig2.add_trace(go.Scatter(x=list(X), y=list(Y2), mode="lines+markers",  name="Temperature"), row=1, col=1,)
-    fig2.add_trace(go.Scatter(x=list(X), y=list(Y3), mode="lines+markers",  name="Humidity"), row=1, col=2,)
-    fig2.update_layout(xaxis=dict(range=[min(X), max(X)]),
-                       yaxis = dict(range = [min(Y2),max(Y2)])
-                       )
-    fig2.update_yaxes(title_text="Temperature °C", row=1, col=1)
-    fig2.update_yaxes(title_text="Humidity %", row=1, col=2)
-    fig2.update_xaxes(title_text="Elapsed Time (s)")
+    fig2.add_trace(go.Scatter(x=list(X), y=list(Y2), mode="lines+markers", name="Temperature"), row=1, col=1, )
+    fig2.add_trace(go.Scatter(x=list(X), y=list(Y3), mode="lines+markers", name="Humidity"), row=1, col=2, )
+    fig2.update_layout(xaxis=dict(range=[min(X), max(X)]))
+    fig2.update_yaxes(title_text="Temperature °C", row=1, col=1, range=[0, 40])
+    fig2.update_yaxes(title_text="Humidity %", row=1, col=2, range=[0, 100])
+    fig2.update_xaxes(title_text="Elapsed Time (s)", range=[min(X), max(X)])
+
+    Y = [Y0, Y1, Y2, Y3]
+    data = plotly.graph_objs.Scatter(x=list(X), y=list(Y[sensor]), name='Scatter', mode='lines+markers')
+    fig0 = {'data': [data], 'layout': go.Layout(xaxis=dict(range=[min(X), max(X)]),
+                                                yaxis=dict(range=[min(Y[sensor]), max(Y[sensor])]), )}
+    y0 = f"Moisture: {Y0[-1]} %"
+    y1 = f"Light Intensity: {Y1[-1]} %"
+    y2 = f"Temperature: {Y2[-1]} °C"
+    y3 = f"Humidity: {Y3[-1]} %"
+    return fig0, fig, fig2, now(), y0, y1, y2, y3
+
+
+@app.callback(Output('output', 'children'),
+              [Input('fan', 'value')])
+def update_output_1(value):
+    obj.activate_actuator(15, value)
+    return value
 
     return {'data': [data],
             'layout' : go.Layout(xaxis=dict(range=[min(X), max(X)]),yaxis = dict(range = [min(Y0),max(Y0)]),)}, fig, fig2
