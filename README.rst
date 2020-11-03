@@ -17,8 +17,12 @@ Repository For the SmartAgro API Demonstration
 * Free software: GNU General Public License v3
 
 
-To run the demonstrator, run::
-        python3 ./greenhouse.py
+To run the demonstrator, run:
+        
+        
+.. code-block:: bash
+
+   $ python3 ./greenhouse.py
    
    
 
